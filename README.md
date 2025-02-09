@@ -1,4 +1,4 @@
-not only desktop and mobile .While exploring i created some web application.This is a html file css and javascript is intrigrated there.it can work as a ai assistance.
+not only desktop and mobile application  .While exploring on android and desktop appllication i created some web application.This is a html file css and javascript is intrigrated there.it can work as a ai assistance.
 
 For example if you give it a command like "open youtube/watsapp/instragram"
 it can open that for you
