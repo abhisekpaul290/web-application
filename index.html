@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>AI Assistant</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap');
+            * {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+            }
+            html, body {
+                height: 100%;
+                width: 100%;
+            }
+            body {
+                width: 100vw;
+                height: 100vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: white;
+                background-image: url('./70a48b00-434b-42ce-ad39-f9b4176238fe.jpg');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                position: relative;
+                overflow: hidden;
+            }
+            .container {
+                padding: 40px;
+                position: absolute;
+                left: 20%;
+                background-color: rgba(0, 0, 0, 0.6);
+                border-radius: 10px;
+                width: 40%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
+            h1 {
+                font-size: 35px;
+                font-family: "Roboto";
+            }
+            p {
+                color: orange;
+                font-size: 18px;
+            }
+            .btn {
+                margin-top: 20px;
+                padding: 10px 20px;
+                font-size: 1.2em;
+                cursor: pointer;
+                color: #fff;
+                background-color: #4CAF50;
+                border: none;
+                border-radius: 5px;
+                transition: background-color 0.2s;
+            }
+            .btn:hover {
+                background-color: #45a049;
+            }
+            .listening {
+                animation: pulse 1s infinite;
+                background-color: #FF6347;
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.1); }
+                100% { transform: scale(1); }
+            }
+            .developer-info {
+                position: absolute;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: rgba(0, 0, 0, 0.7);
+                padding: 10px 20px;
+                border-radius: 10px;
+                text-align: center;
+                font-size: 14px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Your AI Assistant</h1>
+            <p>Press the button and say a command (e.g., "Open YouTube")</p>
+            <button id="listen-btn" class="btn">🎙️ Start Listening</button>
+        </div>
+        <div class="developer-info">
+            <p>Developed by Abhisek Paul | Student ID: 220213 | Institution: Khulna University</p>
+        </div>
+        <script>
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = "en-US";
+            const btn = document.querySelector("#listen-btn");
+            let isYouTubeOpen = false;
+            let youtubeTab;
+
+            btn.addEventListener("click", function () {
+                function speak(text) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    window.speechSynthesis.speak(utterance);
+                }
+
+                function handleCommand(command) {
+                    if (command.includes("open youtube")) {
+                        speak("Opening YouTube...");
+                        youtubeTab = window.open("https://www.youtube.com", "_blank");
+                        isYouTubeOpen = true;
+
+                        setTimeout(() => {
+                            speak("What do you want to search on YouTube?");
+                            btn.innerHTML = "Listening for YouTube Search...👂";
+                            recognition.start();
+                        }, 3000);
+
+                    } else if (isYouTubeOpen) {
+                        let searchQuery = command.trim();
+                        if (searchQuery && youtubeTab) {
+                            speak("Searching YouTube for " + searchQuery);
+                            youtubeTab.location.href = `https://www.youtube.com/results?search_query=${encodeURIComponent(searchQuery)}`;
+                        } else {
+                            speak("Please say a valid search term.");
+                        }
+                        isYouTubeOpen = false;
+                    } else if (command.includes("close all tabs")) {
+                        speak("Closing all open tabs.");
+                        window.open("", "_self").close();
+                    } else if (command.includes("open google")) {
+                        speak("Opening Google...");
+                        window.open("https://www.google.com", "_blank");
+                    } else if (command.includes("open facebook")) {
+                        speak("Opening Facebook...");
+                        window.open("https://www.facebook.com", "_blank");
+                    } else if (command.includes("open instagram")) {
+                        speak("Opening Instagram...");
+                        window.open("https://www.instagram.com", "_blank");
+                    } else if (command.includes("open whatsapp")) {
+                        speak("Opening WhatsApp...");
+                        window.open("https://www.whatsapp.com", "_blank");
+                    } else {
+                        speak("Searching Google for " + command);
+                        window.open(`https://www.google.com/search?q=${encodeURIComponent(command)}`, "_blank");
+                    }
+                }
+
+                speak("Hello, how can I help you?");
+                setTimeout(() => {
+                    btn.innerHTML = "Listening...👂";
+                    btn.classList.add("listening");
+                    recognition.start();
+                }, 2500);
+
+                recognition.onresult = (event) => {
+                    const command = event.results[0][0].transcript.toLowerCase();
+                    handleCommand(command);
+                };
+
+                recognition.onend = () => {
+                    btn.innerHTML = "Start Listening";
+                    btn.classList.remove("listening");
+                };
+            });
+        </script>
+    </body>
+</html>
